@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 
 const defaultTags = [
-  { name: "Tag 1", color: "#cccccc", species: "Largemouth Bass" },
-  { name: "Tag 2", color: "#cccccc", species: "Largemouth Bass" },
-  { name: "Tag 3", color: "#cccccc", species: "Largemouth Bass" },
-  { name: "Tag 4", color: "#cccccc", species: "Largemouth Bass" },
-  { name: "Tag 5", color: "#cccccc", species: "Largemouth Bass" }
+  { name: "Tag 1", color: "Black", species: "" },
+  { name: "Tag 2", color: "Blue", species: "" },
+  { name: "Tag 3", color: "Green", species: "" },
+  { name: "Tag 4", color: "Chartreuse", species: "" },
+  { name: "Tag 5", color: "Orange", species: "" }
+];
+
+const colorOptions = [
+  "Black",
+  "Blue",
+  "Green",
+  "Chartreuse",
+  "Orange",
+  "White",
+  "Yellow",
+  "Red",
+  "Purple",
+  "Gray",
+  "Orange/White",
+  "Pink"
 ];
 
 const inputStyle = {
-  width: "100%",
   padding: 8,
   backgroundColor: "#fff",
   color: "#000",
@@ -39,7 +53,7 @@ export default function CullTracker() {
       tags,
       fishWeights,
       cullHistory,
-      bestFiveTotal: getBestFive(),
+      bestFiveTotal: getBestFive()
     };
     setTournaments([...tournaments, summary]);
     setView("summary");
@@ -109,12 +123,13 @@ export default function CullTracker() {
     return (
       <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
         <h1 style={{ fontSize: "1.5rem" }}>Start a New Tournament</h1>
-        <input style={inputStyle} placeholder="Tournament Name" value={tournamentName} onChange={(e) => setTournamentName(e.target.value)} /><br /><br />
-        <input style={inputStyle} placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} /><br /><br />
-        <input style={inputStyle} type="date" value={date} onChange={(e) => setDate(e.target.value)} /><br /><br />
-        <textarea style={inputStyle} placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} /><br /><br />
+        <input style={{ ...inputStyle, width: "100%" }} placeholder="Tournament Name" value={tournamentName} onChange={(e) => setTournamentName(e.target.value)} /><br /><br />
+        <input style={{ ...inputStyle, width: "100%" }} placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} /><br /><br />
+        <label>Date:</label><br />
+        <input style={{ ...inputStyle, width: "100%" }} type="date" value={date} onChange={(e) => setDate(e.target.value)} /><br /><br />
+        <textarea style={{ ...inputStyle, width: "100%" }} placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} /><br /><br />
         <label>Weight Format:</label><br />
-        <select style={inputStyle} value={unit} onChange={(e) => setUnit(e.target.value)}>
+        <select style={{ ...inputStyle, width: "100%" }} value={unit} onChange={(e) => setUnit(e.target.value)}>
           <option value="decimal">Pounds (e.g. 3.25)</option>
           <option value="lbs_oz">Pounds & Ounces</option>
         </select><br /><br />
@@ -151,22 +166,27 @@ export default function CullTracker() {
       {tags.map((tag, index) => (
         <div key={tag.name} style={{ border: "1px solid #ddd", marginBottom: 15, padding: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <input
-              type="color"
+            <select
               value={tag.color}
               onChange={(e) => updateTag(index, "color", e.target.value)}
-            />
+              style={{ ...inputStyle, width: 150 }}
+            >
+              {colorOptions.map((color) => (
+                <option key={color} value={color}>{color}</option>
+              ))}
+            </select>
             <input
               placeholder="Name or Number"
               value={tag.name}
               onChange={(e) => updateTag(index, "name", e.target.value)}
-              style={{ flex: 1, ...inputStyle }}
+              style={{ width: 120, ...inputStyle }}
             />
             <select
-              value={tag.species || "Largemouth Bass"}
+              value={tag.species || ""}
               onChange={(e) => updateTag(index, "species", e.target.value)}
-              style={inputStyle}
+              style={{ width: 160, ...inputStyle }}
             >
+              <option value="">Species</option>
               <option value="Largemouth Bass">Largemouth Bass</option>
               <option value="Smallmouth Bass">Smallmouth Bass</option>
               <option value="Spotted Bass">Spotted Bass</option>
@@ -179,7 +199,7 @@ export default function CullTracker() {
               placeholder="e.g. 3.25"
               value={fishWeights[tag.name] || ""}
               onChange={(e) => updateWeight(tag.name, e.target.value)}
-              style={inputStyle}
+              style={{ width: "100%", ...inputStyle }}
             />
           ) : (
             <div style={{ display: "flex", gap: 10 }}>
@@ -205,10 +225,6 @@ export default function CullTracker() {
               />
             </div>
           )}
-          <br />
-          <p style={{ fontSize: "0.9em", color: "#555" }}>
-            Culls: {(cullHistory[tag.name] || []).join(", ") || "None"}
-          </p>
         </div>
       ))}
 
