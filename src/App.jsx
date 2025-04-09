@@ -1,9 +1,4 @@
-import React from "react";
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import React, { useState } from "react";
 
 const defaultTags = [
   { name: "Orange", color: "#FFA500" },
@@ -78,111 +73,105 @@ export default function CullTracker() {
 
   if (view === "start") {
     return (
-      <div className="p-4 max-w-xl mx-auto space-y-4">
-        <h1 className="text-2xl font-bold">Start a New Tournament</h1>
-        <Input placeholder="Tournament Name" value={tournamentName} onChange={(e) => setTournamentName(e.target.value)} />
-        <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <Textarea placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
-        <div className="space-y-2">
-          <label className="font-semibold block">Weight Format:</label>
-          <select value={unit} onChange={(e) => setUnit(e.target.value)} className="border rounded px-2 py-1">
-            <option value="decimal">Pounds (e.g. 3.25)</option>
-            <option value="lbs_oz">Pounds & Ounces</option>
-          </select>
-        </div>
-        <Button className="mt-4" onClick={startTournament}>Start Tournament</Button>
+      <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+        <h1>Start a New Tournament</h1>
+        <input placeholder="Tournament Name" value={tournamentName} onChange={(e) => setTournamentName(e.target.value)} /><br /><br />
+        <input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} /><br /><br />
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} /><br /><br />
+        <textarea placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} /><br /><br />
+        <label>Weight Format:</label><br />
+        <select value={unit} onChange={(e) => setUnit(e.target.value)}>
+          <option value="decimal">Pounds (e.g. 3.25)</option>
+          <option value="lbs_oz">Pounds & Ounces</option>
+        </select><br /><br />
+        <button onClick={startTournament}>Start Tournament</button>
       </div>
     );
   }
 
   if (view === "summary") {
     return (
-      <div className="p-4 max-w-3xl mx-auto space-y-4">
-        <h2 className="text-xl font-bold">My Tournaments</h2>
+      <div style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+        <h2>My Tournaments</h2>
         {tournaments.map((t, i) => (
-          <Card key={i} className="border shadow">
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold">{t.tournamentName} – {t.location}</h3>
-              <p className="text-sm text-gray-600">{t.date}</p>
-              <p className="text-sm">Total Weight: {t.bestFiveTotal} lbs</p>
-              <p className="text-sm italic">Notes: {t.notes}</p>
-            </CardContent>
-          </Card>
+          <div key={i} style={{ border: "1px solid #ccc", marginBottom: 10, padding: 10 }}>
+            <h3>{t.tournamentName} – {t.location}</h3>
+            <p>{t.date}</p>
+            <p>Total Weight: {t.bestFiveTotal} lbs</p>
+            <p><i>Notes: {t.notes}</i></p>
+          </div>
         ))}
-        <Button onClick={() => setView("start")}>Start New Tournament</Button>
+        <button onClick={() => setView("start")}>Start New Tournament</button>
       </div>
     );
   }
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-4">
-      <h2 className="text-xl font-semibold">{tournamentName} – {location} – {date}</h2>
-      <p className="text-sm text-gray-600">Notes: {notes}</p>
+    <div style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+      <h2>{tournamentName} – {location} – {date}</h2>
+      <p><i>{notes}</i></p>
 
       {tags.map((tag, index) => (
-        <Card key={tag.name} className="border shadow">
-          <CardContent className="p-4 space-y-2">
-            <div className="flex items-center space-x-2">
+        <div key={tag.name} style={{ border: "1px solid #ddd", marginBottom: 15, padding: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <input
+              type="color"
+              value={tag.color}
+              onChange={(e) => updateTag(index, "color", e.target.value)}
+            />
+            <input
+              value={tag.name}
+              onChange={(e) => updateTag(index, "name", e.target.value)}
+              style={{ flex: 1 }}
+            />
+          </div>
+          <br />
+          {unit === "decimal" ? (
+            <input
+              type="text"
+              placeholder="e.g. 3.25"
+              value={fishWeights[tag.name] || ""}
+              onChange={(e) => updateWeight(tag.name, e.target.value)}
+            />
+          ) : (
+            <div style={{ display: "flex", gap: 10 }}>
               <input
-                type="color"
-                value={tag.color}
-                onChange={(e) => updateTag(index, "color", e.target.value)}
+                type="number"
+                placeholder="lbs"
+                value={fishWeights[tag.name]?.split(" ")[0] || ""}
+                onChange={(e) => {
+                  const current = fishWeights[tag.name]?.split(" ") || ["", ""];
+                  updateWeight(tag.name, `${e.target.value} ${current[1]}`);
+                }}
               />
-              <Input
-                value={tag.name}
-                onChange={(e) => updateTag(index, "name", e.target.value)}
-                className="w-full"
+              <input
+                type="number"
+                placeholder="oz"
+                value={fishWeights[tag.name]?.split(" ")[1] || ""}
+                onChange={(e) => {
+                  const current = fishWeights[tag.name]?.split(" ") || ["", ""];
+                  updateWeight(tag.name, `${current[0]} ${e.target.value}`);
+                }}
               />
             </div>
-            {unit === "decimal" ? (
-              <Input
-                type="text"
-                placeholder="e.g. 3.25"
-                value={fishWeights[tag.name] || ""}
-                onChange={(e) => updateWeight(tag.name, e.target.value)}
-              />
-            ) : (
-              <div className="flex space-x-2">
-                <Input
-                  type="number"
-                  placeholder="lbs"
-                  value={fishWeights[tag.name]?.split(" ")[0] || ""}
-                  onChange={(e) => {
-                    const current = fishWeights[tag.name]?.split(" ") || ["", ""];
-                    updateWeight(tag.name, `${e.target.value} ${current[1]}`);
-                  }}
-                />
-                <Input
-                  type="number"
-                  placeholder="oz"
-                  value={fishWeights[tag.name]?.split(" ")[1] || ""}
-                  onChange={(e) => {
-                    const current = fishWeights[tag.name]?.split(" ") || ["", ""];
-                    updateWeight(tag.name, `${current[0]} ${e.target.value}`);
-                  }}
-                />
-              </div>
-            )}
-            <Button
-              onClick={() => {
-                const newWeight = prompt("Enter new culled weight:");
-                if (newWeight) addCull(tag.name, newWeight);
-              }}
-            >
-              Add Cull Replacement
-            </Button>
-            <div className="text-sm text-gray-600">
-              Culls: {(cullHistory[tag.name] || []).join(", ") || "None"}
-            </div>
-          </CardContent>
-        </Card>
+          )}
+          <br />
+          <button
+            onClick={() => {
+              const newWeight = prompt("Enter new culled weight:");
+              if (newWeight) addCull(tag.name, newWeight);
+            }}
+          >
+            Add Cull Replacement
+          </button>
+          <p style={{ fontSize: "0.9em", color: "#555" }}>
+            Culls: {(cullHistory[tag.name] || []).join(", ") || "None"}
+          </p>
+        </div>
       ))}
 
-      <div className="p-4 border-t font-semibold text-xl">
-        Best 5 Total: {getBestFive()} lbs
-      </div>
-      <Button className="mt-4" onClick={saveTournament}>Save Tournament</Button>
+      <h3>Best 5 Total: {getBestFive()} lbs</h3>
+      <button onClick={saveTournament}>Save Tournament</button>
     </div>
   );
 }
