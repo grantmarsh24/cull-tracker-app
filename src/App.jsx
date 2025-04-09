@@ -31,6 +31,61 @@ const inputStyle = {
   borderRadius: 4
 };
 
+function ColorDropdown({ selectedColor, onChange }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div style={{ position: "relative" }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          width: 30,
+          height: 30,
+          background: selectedColor,
+          border: "1px solid #000",
+          borderRadius: 4,
+          cursor: "pointer"
+        }}
+      ></div>
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            top: 35,
+            left: 0,
+            background: "#fff",
+            border: "1px solid #ccc",
+            padding: 6,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
+            zIndex: 10
+          }}
+        >
+          {colorOptions.map((opt) => (
+            <div
+              key={opt.name}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+              title={opt.name}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 4,
+                background: opt.value,
+                border: selectedColor === opt.value ? "2px solid #000" : "1px solid #ccc",
+                cursor: "pointer"
+              }}
+            ></div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function CullTracker() {
   const [tournaments, setTournaments] = useState([]);
   const [view, setView] = useState("start");
@@ -166,25 +221,7 @@ export default function CullTracker() {
       {tags.map((tag, index) => (
         <div key={tag.name} style={{ border: "1px solid #ddd", marginBottom: 15, padding: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {colorOptions.map((opt) => (
-                  <div
-                    key={opt.name}
-                    onClick={() => updateTag(index, "color", opt.value)}
-                    title={opt.name}
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      background: opt.value,
-                      border: tag.color === opt.value ? "2px solid #000" : "1px solid #ccc"
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+            <ColorDropdown selectedColor={tag.color} onChange={(value) => updateTag(index, "color", value)} />
             <input
               placeholder="Name or Number"
               value={tag.name}
