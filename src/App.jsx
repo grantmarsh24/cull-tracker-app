@@ -40,15 +40,40 @@ export default function CullTracker() {
     setView("tracker");
   };
 
-  const updateWeight = (tag, weight) => {
-    setFishWeights({ ...fishWeights, [tag]: weight });
+  const editTournament = (index) => {
+    const t = tournaments[index];
+    setTournamentName(t.tournamentName);
+    setLocation(t.location);
+    setDate(t.date);
+    setNotes(t.notes);
+    setUnit(t.unit);
+    setTags(t.tags);
+    setFishWeights(t.fishWeights);
+    setCullHistory(t.cullHistory);
+    setView("tracker");
   };
 
-  const addCull = (tag, weight) => {
-    setCullHistory({
-      ...cullHistory,
-      [tag]: [...(cullHistory[tag] || []), weight],
-    });
+  const deleteTournament = (index) => {
+    const newList = tournaments.filter((_, i) => i !== index);
+    setTournaments(newList);
+  };
+
+  const exportTournament = (t) => {
+    const content = `Tournament: ${t.tournamentName}\nLocation: ${t.location}\nDate: ${t.date}\nTotal Weight: ${t.bestFiveTotal} lbs\nNotes: ${t.notes}`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${t.tournamentName.replace(/\s+/g, '_')}_summary.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const updateWeight = (tag, weight) => {
+    const updated = { ...fishWeights, [tag]: weight };
+    setFishWeights(updated);
   };
 
   const convertToDecimal = (weight) => {
@@ -99,6 +124,9 @@ export default function CullTracker() {
             <p>{t.date}</p>
             <p>Total Weight: {t.bestFiveTotal} lbs</p>
             <p><i>Notes: {t.notes}</i></p>
+            <button onClick={() => editTournament(i)}>Edit</button>
+            <button onClick={() => deleteTournament(i)} style={{ marginLeft: 10 }}>Delete</button>
+            <button onClick={() => exportTournament(t)} style={{ marginLeft: 10 }}>Export</button>
           </div>
         ))}
         <button onClick={() => setView("start")}>Start New Tournament</button>
@@ -156,14 +184,6 @@ export default function CullTracker() {
             </div>
           )}
           <br />
-          <button
-            onClick={() => {
-              const newWeight = prompt("Enter new culled weight:");
-              if (newWeight) addCull(tag.name, newWeight);
-            }}
-          >
-            Add Cull Replacement
-          </button>
           <p style={{ fontSize: "0.9em", color: "#555" }}>
             Culls: {(cullHistory[tag.name] || []).join(", ") || "None"}
           </p>
