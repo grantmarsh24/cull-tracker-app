@@ -166,17 +166,25 @@ export default function CullTracker() {
       {tags.map((tag, index) => (
         <div key={tag.name} style={{ border: "1px solid #ddd", marginBottom: 15, padding: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <select
-              value={tag.color}
-              onChange={(e) => updateTag(index, "color", e.target.value)}
-              style={{ width: 150, padding: 6 }}
-            >
-              {colorOptions.map((opt) => (
-                <option key={opt.name} value={opt.value} style={{ backgroundColor: opt.value, color: opt.name === "White" ? "black" : "white" }}>
-                  {opt.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {colorOptions.map((opt) => (
+                  <div
+                    key={opt.name}
+                    onClick={() => updateTag(index, "color", opt.value)}
+                    title={opt.name}
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 4,
+                      cursor: "pointer",
+                      background: opt.value,
+                      border: tag.color === opt.value ? "2px solid #000" : "1px solid #ccc"
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
             <input
               placeholder="Name or Number"
               value={tag.name}
