@@ -1,26 +1,26 @@
 import React, { useState } from "react";
 
 const defaultTags = [
-  { name: "Tag 1", color: "Black", species: "" },
-  { name: "Tag 2", color: "Blue", species: "" },
-  { name: "Tag 3", color: "Green", species: "" },
-  { name: "Tag 4", color: "Chartreuse", species: "" },
-  { name: "Tag 5", color: "Orange", species: "" }
+  { name: "Tag 1", color: "#000000", species: "" },
+  { name: "Tag 2", color: "#0000FF", species: "" },
+  { name: "Tag 3", color: "#008000", species: "" },
+  { name: "Tag 4", color: "#7FFF00", species: "" },
+  { name: "Tag 5", color: "#FFA500", species: "" }
 ];
 
 const colorOptions = [
-  "Black",
-  "Blue",
-  "Green",
-  "Chartreuse",
-  "Orange",
-  "White",
-  "Yellow",
-  "Red",
-  "Purple",
-  "Gray",
-  "Orange/White",
-  "Pink"
+  { name: "Black", value: "#000000" },
+  { name: "Blue", value: "#0000FF" },
+  { name: "Green", value: "#008000" },
+  { name: "Chartreuse", value: "#7FFF00" },
+  { name: "Orange", value: "#FFA500" },
+  { name: "White", value: "#FFFFFF" },
+  { name: "Yellow", value: "#FFFF00" },
+  { name: "Red", value: "#FF0000" },
+  { name: "Purple", value: "#800080" },
+  { name: "Gray", value: "#808080" },
+  { name: "Orange/White", value: "linear-gradient(to right, #FFA500 50%, #FFFFFF 50%)" },
+  { name: "Pink", value: "#FFC0CB" }
 ];
 
 const inputStyle = {
@@ -169,10 +169,12 @@ export default function CullTracker() {
             <select
               value={tag.color}
               onChange={(e) => updateTag(index, "color", e.target.value)}
-              style={{ ...inputStyle, width: 150 }}
+              style={{ width: 150, padding: 6 }}
             >
-              {colorOptions.map((color) => (
-                <option key={color} value={color}>{color}</option>
+              {colorOptions.map((opt) => (
+                <option key={opt.name} value={opt.value} style={{ backgroundColor: opt.value, color: opt.name === "White" ? "black" : "white" }}>
+                  {opt.name}
+                </option>
               ))}
             </select>
             <input
